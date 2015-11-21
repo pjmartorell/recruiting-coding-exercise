@@ -42,3 +42,4 @@ group :development, :test do
   gem 'nokogiri'
 end
 
+gem 'webmock', :group => :test

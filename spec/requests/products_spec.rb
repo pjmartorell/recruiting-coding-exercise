@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "Products", type: :request do
+  before do
+    doc = File.read(Rails.root + 'spec/support/eurofxref-hist-90d.xml')
+    stub_request(:get, /www.ecb.europa.eu/).to_return(:body => doc)
+  end
+
   describe "GET /products" do
     before do
       3.times do
