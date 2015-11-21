@@ -1,5 +1,4 @@
 require 'rails_helper'
-require "exchange_rates_feeder"
 
 describe ExchangeRatesFeeder do
   before do
