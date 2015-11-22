@@ -44,3 +44,19 @@ body {
   font-size: 100%;
 }
 
+#page_bottom {
+  height: 30px;
+  margin-top: -15px;
+  background: image-url("bottom_shadow.png") repeat-x;
+}
+
+footer {
+  background: image-url("footer.png") no-repeat scroll 50% 0 transparent;
+  background-color: black;
+  color: #888;
+  padding: 10px 0;
+}
+
+footer #footer_shadow {
+  background: image-url("footer_shadow.png") repeat-x scroll 0 0 transparent;
+}

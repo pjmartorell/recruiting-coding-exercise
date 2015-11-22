@@ -1,0 +1,15 @@
+#footer_shadow
+.container-fluid
+  .row
+    .col-xs-6.col-sm-6
+      #copyright.navbar-text.pull-left
+        = "© #{Time.now.year}"
+        by
+        = mail_to "pj.martorell@gmail.com", "Pere Joan Martorell", :encode => "javascript"
+    .col-xs-6.col-sm-6
+      .navbar-text.pull-right
+        .form-inline
+          .form-group
+            pick a currency
+          .form-group
+            = select_tag "currency", options_for_select(ExchangeRatesFeeder.get_rates.keys), :onchange => "this.form.submit()"
