@@ -42,4 +42,9 @@ group :development, :test do
   gem 'nokogiri'
 end
 
-gem 'webmock', :group => :test
+group :test do
+  gem 'webmock'
+	gem 'capybara'
+	gem 'selenium-webdriver'
+	gem 'database_cleaner'
+end
