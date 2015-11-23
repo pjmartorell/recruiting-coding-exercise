@@ -18,6 +18,7 @@ RSpec.describe "Products", type: :request do
     it "lists all products" do
       get products_path
       expect(response).to have_http_status(200)
+      expect(response).to render_template "shared/_footer"
       products = Nokogiri::HTML(response.body).css('.product')
       expect(products.length).to eq(3)
     end
@@ -33,6 +34,7 @@ RSpec.describe "Products", type: :request do
     it "shows product details" do
       get product_path(@product)
       expect(response).to have_http_status(200)
+      expect(response).to render_template "shared/_footer"
       price = Nokogiri::HTML(response.body).css('.product strong')
       expect(price.text).to match(/34.56\sEUR/)
     end
