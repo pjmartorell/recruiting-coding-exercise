@@ -12,7 +12,7 @@
           .form-group
             pick a currency
           .form-group
-            = select_tag "currency", options_for_select(ExchangeRatesFeeder.get_rates.keys)
+            = select_tag "currency", options_for_select(@exchange_rates.keys)
 
 :javascript
 
@@ -40,7 +40,7 @@
   })();
 
   var Currency = {
-    exchange_rates: #{ExchangeRatesFeeder.get_rates.to_json},
+    exchange_rates: #{@exchange_rates.to_json},
     convert: function(amount, to) {
       return (amount * this.exchange_rates[to])
     },

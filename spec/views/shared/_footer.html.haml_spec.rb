@@ -7,6 +7,7 @@ describe 'shared/_footer' do
   end
 
   it "should display copyright and select box" do
+    assign(:exchange_rates, {:EUR => "1.0"})
     render
     copyright = Nokogiri::HTML(rendered).css('#copyright')
 
