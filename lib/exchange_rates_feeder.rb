@@ -13,6 +13,7 @@ module ExchangeRatesFeeder
         begin
           xml = Nokogiri::XML(open(ECB_URL))
           rates = Hash.new
+          rates[:EUR] = BigDecimal(1)
           xml.css("Cube > Cube:nth-of-type(1) > Cube").each do |e|
             rates[e[:currency].to_sym] = BigDecimal(e[:rate])
           end
