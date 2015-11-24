@@ -12,4 +12,67 @@
           .form-group
             pick a currency
           .form-group
-            = select_tag "currency", options_for_select(ExchangeRatesFeeder.get_rates.keys), :onchange => "this.form.submit()"
+            = select_tag "currency", options_for_select(ExchangeRatesFeeder.get_rates.keys)
+
+:javascript
+
+  function setCookie(key, value) {
+    document.cookie = key + '=' + value + '; path=/';
+  };
+
+  (function(){
+    var cookies;
+
+    function readCookie(name,c,C,i){
+      if(cookies){ return cookies[name]; }
+      c = document.cookie.split('; ');
+
+      cookies = {};
+
+      for(i=c.length-1; i>=0; i--){
+         C = c[i].split('=');
+         cookies[C[0]] = C[1];
+      }
+      return cookies[name];
+    }
+
+    window.readCookie = readCookie;
+  })();
+
+  var Currency = {
+    exchange_rates: #{ExchangeRatesFeeder.get_rates.to_json},
+    convert: function(amount, to) {
+      return (amount * this.exchange_rates[to])
+    },
+    convert_prices: function(){
+      $('.product .price').each(function(){
+        var amount = parseFloat($(this).attr('price-in-EUR'));
+        var new_amount = Currency.convert(amount, current_currency).toFixed(2);
+        $(this).html(new_amount + " " + current_currency);
+        $(this).removeClass('invisible')
+      })
+    }
+  };
+
+  var default_currency = 'EUR';
+
+  var current_currency = readCookie("currency") || default_currency;
+
+  $("#currency").val(current_currency).change();
+
+  $('.product .price').each(function() {
+    $(this).attr('price-in-EUR', $(this).html())
+  });
+
+  if (current_currency !== default_currency ) {
+    Currency.convert_prices(current_currency)
+  }
+  else {
+    $('.product .price').removeClass('invisible')
+  }
+
+  $('#currency').on('change', function(){
+    current_currency =  $(this).val();
+    setCookie("currency", current_currency);
+    Currency.convert_prices()
+  });
