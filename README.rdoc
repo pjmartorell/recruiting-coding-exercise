@@ -15,5 +15,71 @@ Your task would be to:
 * add tests as considered necessary
 * implement the footer matching design included in this repository as footer.png
 
-Good luck!
+== Design decisions
 
+In order to implement switching between currencies and show prices according to the selected currency I came up with 2 approaches.
+
+=== 1. Server-side 
+Do all currency conversions in the server side and get the results from the client side via Ajax, every time the user switches the currency through the select box. Selected currency gets stored in the session, then product prices are returned in the proper currency and a javascript replaces current prices for new ones.
+
+==== 1.1 Pros
+* Exchange rates are updated on remote call in case new rates have been fetched
+* The conversion it's performed using BigDecimal, which provides arbitrary-precision floating point decimal arithmetic and it's the recommended way to deal with currencies
+
+==== 1.2 Cons
+* Expensive in terms of latency, response time and processing
+
+=== 2. Client-side
+Load all exchange rates in the client-side and perform all conversions via javascript, storing current currency in a cookie.
+
+==== 2.1 Pros
+* Lightweight processing of conversions
+* No server-side resources involved in how prices are converted and displayed
+
+==== 2.2 Cons
+* Exchange rates are not updated until a page reload
+* Because of the nature of floats and its normal binary floating point arithmetic, subtle precision errors can occur dealing with big money sums
+
+== Final approach
+At the end I opted out for performing price conversions in the *client side* because it's a lightweight solution and I considered it outweighed the precision errors that can be introduced. Since we are dealing with small amounts, loading a third-party javascript library to just deal with floats imprecisions was not worthwhile.
+
+== Demo
+To sum up, you can check the app I deployed to Heroku here[https://recruiting-coding-exercise.herokuapp.com/].
+
+== Annotations
+Here are some snippets of code I crafted to show how the currency conversion could be properly done in a *server-side* approach.
+
+    module ExchangeRatesFeeder
+      ...
+      def from_euro_to(amount, currency)
+        key = currency.to_s.upcase.to_sym
+        rate = get_rates[key]
+        if rate.nil?
+          raise(NoCurrencyError, "Unknown currency '#{currency}'")
+        else
+          (BigDecimal(amount.to_s) * rate).round(2)
+        end
+      end
+    end
+
+In product views, ActionView helpers can be used to show the currency in the selected currency:
+
+    = number_to_currency @product.price.exchange_to(selected_currency), unit: selected_currency, format: "%n %u"
+
+And also a helper to get the default or selected currency:
+
+    module ApplicationHelper
+      def selected_currency
+        session[:currency] ||= "EUR"
+      end
+    end
+
+For flexibility Numeric class could be monkey-patched as follows:
+
+    class Numeric
+      def exchange_to(currency)
+        ExchangeRatesFeeder.from_euro_to(self, currency)
+      end
+    end
+
+For brevity, I omitted the part related to the select box that is submitted via Ajax.	
